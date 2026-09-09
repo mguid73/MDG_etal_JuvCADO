@@ -195,15 +195,16 @@ down <- down[!duplicated(down$GO_Annotation), ]
 dim(up); dim(down)
 
 # Select top GO terms separately before combining
-top_number = 5
+up_number = 12
+down_number = 12
 
 top_up <- up %>%
   arrange(Fisher) %>%
-  slice_head(n = top_number)
+  slice_head(n = up_number)
 
 top_down <- down %>%
   arrange(Fisher) %>%
-  slice_head(n = top_number)
+  slice_head(n = down_number)
 
 # Combine the pre-filtered datasets
 combined_data <- rbind(top_up, top_down)
@@ -223,7 +224,7 @@ top_terms_mirror <- combined_data %>%
                                   log10p))
 
 #set colors for term text
-term_colors = c(rep("#7A9EA8", top_number), rep("#C47A8A", top_number))
+term_colors = c(rep("#7A9EA8", down_number), rep("#C47A8A", up_number))
 
 # Create mirrored barplot
 topGO1 <- ggplot(top_terms_mirror, aes(x = reorder(Term, order),
@@ -443,18 +444,24 @@ ggVennDiagram(venn_list, label = "count") +
 ## PHASE I 
 
 ```{r}
-top_design <- "
-AAB
-"
-top_row <- vol_str1 + pca1 +
-  plot_layout(design = top_design)
+#top_design <- "
+#AAB
+#"
+#top_row <- vol_str1 + pca1 +
+#  plot_layout(design = top_design)
 
-ge_phase1 <- top_row / free(topGO1) +
+twoPlot <- "
+A
+B
+B"
+
+ge_phase1 <- vol_str1 / free(topGO1) +
+  plot_layout(design = twoPlot) + 
   plot_annotation(tag_levels = "a", tag_suffix = ")")&
   theme(plot.tag = element_text(size = 20, face = "bold"))
 print(ge_phase1)
 # Export to PNG at a specific size
-ggsave("../manuscript_figures/main/Figure3_Phase1_DEG.png", plot = ge_phase1, width = 10, height =8, units = "in", dpi = 300)
+ggsave("../manuscript_figures/main/Figure3_Phase1_DEG.png", plot = ge_phase1, width = 10, height =12, units = "in", dpi = 300)
 ```
 
 ## PHASE II
@@ -502,5 +509,131 @@ print(ge_phase2)
 
 # Export to PNG at a specific size
 ggsave("../manuscript_figures/main/Figure4_Phase2_DEG.png", plot = ge_phase2, width = 16, height =8, units = "in", dpi = 300)
+```
+
+### Supplemental - Volcano plots
+```{r}
+#read in full dataset for volcano plot
+p2_deg_str <- read.csv("../de_analysis/outputs/p2_stress_DEGs.csv")
+p2_deg_rec <- read.csv("../de_analysis/outputs/p2_recovery_DEGs.csv")
+p2_deg_nai <- read.csv("../de_analysis/outputs/p2_naive_DEGs.csv")
+```
+
+PII stress
+```{r}
+# Create a basic volcano plot with adjusted p-values (to account for multiple hypothesis testing)
+p2_vol_str <- ggplot(data = p2_deg_str, aes(x = log2FoldChange, y = -log10(padj), fill = diffexpressed))  +
+  #add threshold lines (these are mostly arbitrarily chosen)
+  geom_vline(xintercept = c(-0.8, 0.8), col = "gray", linetype = 'dashed') +
+  #chose a pretty stringent p-value cut off 
+  geom_hline(yintercept = -log10(0.05), col = "gray", linetype = 'dashed') +
+  geom_point(pch=21, size = 2) +
+  #annotate("text", x = -10, y = 15, label = "Downregulated", color = "#7A9EA8", size = 3) +
+  #annotate("text", x = 10, y = 15, label = "Upregulated", color = "#C47A8A", size = 3) +
+  annotate("text", x= 10, y=30, label = "PII Stress", size = 4) +
+  # to set the colours of our variable
+  scale_fill_manual(values = c("#7A9EA8", "grey", "#C47A8A")) 
+                     # to set the labels in case we want to overwrite the categories from the dataframe (UP, DOWN, NO)
+                     #labels = c("Downregulated", "Not significant", "Upregulated")) #removed legend
+  # Biostatsquid theme
+  theme_set(theme_classic(base_size = 12) +
+              theme(
+              axis.title.y = element_text(face = "bold",
+                                          margin = margin(0,20,0,0),
+                                          size = rel(1.1),
+                                          color = 'black'),
+              axis.title.x = element_text(hjust = 0.5,
+                                          face = "bold",
+                                          margin = margin(20,0,0,0),
+                                          size = rel(1.1),
+                                          color = 'black'),
+              plot.title = element_text(hjust = 0.5),
+              legend.position = "none"
+              #legend.title = element_blank()
+            ));p2_vol_str
+```
+PII recovery
+```{r}
+# Create a basic volcano plot with adjusted p-values (to account for multiple hypothesis testing)
+p2_vol_rec <- ggplot(data = p2_deg_rec, aes(x = log2FoldChange, y = -log10(padj), fill = diffexpressed))  +
+  #add threshold lines (these are mostly arbitrarily chosen)
+  geom_vline(xintercept = c(-0.8, 0.8), col = "gray", linetype = 'dashed') +
+  #chose a pretty stringent p-value cut off 
+  geom_hline(yintercept = -log10(0.05), col = "gray", linetype = 'dashed') +
+  geom_point(pch=21, size = 2) +
+  #annotate("text", x = -10, y = 15, label = "Downregulated", color = "#7A9EA8", size = 3) +
+  #annotate("text", x = 10, y = 15, label = "Upregulated", color = "#C47A8A", size = 3) +
+  annotate("text", x= 12, y=30, label = "PII Recovery", size = 4) +
+  # to set the colours of our variable
+  scale_fill_manual(values = c("#7A9EA8", "grey", "#C47A8A")) 
+                     # to set the labels in case we want to overwrite the categories from the dataframe (UP, DOWN, NO)
+                     #labels = c("Downregulated", "Not significant", "Upregulated")) #removed legend
+  # Biostatsquid theme
+  theme_set(theme_classic(base_size = 12) +
+              theme(
+              axis.title.y = element_text(face = "bold",
+                                          margin = margin(0,20,0,0),
+                                          size = rel(1.1),
+                                          color = 'black'),
+              axis.title.x = element_text(hjust = 0.5,
+                                          face = "bold",
+                                          margin = margin(20,0,0,0),
+                                          size = rel(1.1),
+                                          color = 'black'),
+              plot.title = element_text(hjust = 0.5),
+              legend.position = "none"
+              #legend.title = element_blank()
+            ));p2_vol_rec
+```
+
+PII naive
+```{r}
+# Create a basic volcano plot with adjusted p-values (to account for multiple hypothesis testing)
+p2_vol_nai <- ggplot(data = p2_deg_nai, aes(x = log2FoldChange, y = -log10(padj), fill = diffexpressed))  +
+  #add threshold lines (these are mostly arbitrarily chosen)
+  geom_vline(xintercept = c(-0.8, 0.8), col = "gray", linetype = 'dashed') +
+  #chose a pretty stringent p-value cut off 
+  geom_hline(yintercept = -log10(0.05), col = "gray", linetype = 'dashed') +
+  geom_point(pch=21, size = 2) +
+  #annotate("text", x = -10, y = 15, label = "Downregulated", color = "#7A9EA8", size = 3) +
+  #annotate("text", x = 10, y = 15, label = "Upregulated", color = "#C47A8A", size = 3) +
+  annotate("text", x= 10, y=30, label = "PII Naïve", size = 4) +
+  # to set the colours of our variable
+  scale_fill_manual(values = c("#7A9EA8", "grey", "#C47A8A")) 
+                     # to set the labels in case we want to overwrite the categories from the dataframe (UP, DOWN, NO)
+                     #labels = c("Downregulated", "Not significant", "Upregulated")) #removed legend
+  # Biostatsquid theme
+  theme_set(theme_classic(base_size = 12) +
+              theme(
+              axis.title.y = element_text(face = "bold",
+                                          margin = margin(0,20,0,0),
+                                          size = rel(1.1),
+                                          color = 'black'),
+              axis.title.x = element_text(hjust = 0.5,
+                                          face = "bold",
+                                          margin = margin(20,0,0,0),
+                                          size = rel(1.1),
+                                          color = 'black'),
+              plot.title = element_text(hjust = 0.5),
+              legend.position = "none"
+              #legend.title = element_blank()
+            ));p2_vol_nai
+```
+
+
+
+```{r}
+supp_vol_design <- "
+ABC
+"
+
+supp_vol <- (p2_vol_str | p2_vol_rec | p2_vol_nai) +
+  plot_layout(design = supp_vol_design, axes = "collect") +
+  plot_annotation(tag_levels = "a", tag_suffix = ")") &
+  theme(plot.tag = element_text(size = 16, face = "bold"))
+print(supp_vol)
+
+# Export to PNG at a specific size
+ggsave("../manuscript_figures/supplemental/Sup1_PII_volcano.png", plot = supp_vol, width = 10, height =4, units = "in", dpi = 300)
 ```
 
