@@ -4,10 +4,11 @@ Data and reproducible code for a cycled multistressor experiment on juvenile eas
 
 > Status: Manuscript in preparation. This repository is under active development and will be finalized upon publication.
 
-## Authors:
+## Authors
 - **Megan E. Delatte-Guidry*** 
 - **Caitlin Randall*** 
-- **Cassandra Cerasia*** 
+- **Cassandra H. Cerasia*** 
+- **Amaelia Zyck***
 - **Jonathan B. Puritz***
 
 *University of Rhode Island, Department of Biological Sciences
@@ -33,10 +34,10 @@ conda activate Ch3
 **Accession number**
 
 ## Citation 
-Working title: "Cyclic acidification and hypoxia alter phenotype and transcriptome of juvenile eastern oysters"
+Working title: "Cycled acidification and hypoxia alter transcriptomic signatures despite apparent phenotypic recovery of juvenile eastern oysters"
 
 ## Contact 
 Megan E. Delatte-Guidry (mguidry@uri.edu)
 
 ## Funding
-*******add specific award numbers here before publication*********
+This work was funded by NOAA and the Atlantic States Marine Fisheries Council (NA18NMF4720321), RI Sea Grant (R/1822-2022-104-01), and the College of Environmental and Life Sciences at the University of Rhode Island via USDA-NIFA Hatch Program projects 1017848/RI0019-H020 and 1021665/NJ30401.  This is contribution 003 from the Puritz Lab of Marine Evolutionary Ecology.
